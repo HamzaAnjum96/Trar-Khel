@@ -1,0 +1,77 @@
+{
+  "docType": "office-memo",
+  "seed": 88,
+  "title": "office-memo",
+  "language": { "primary": "en", "bilingual": true },
+  "masthead": {
+    "authority": { "en": "GOVERNMENT OF INDIA", "hi": "भारत सरकार" },
+    "department": { "en": "Ministry of Finance", "hi": "वित्त मंत्रालय" },
+    "office": { "en": "Department of Economic Affairs", "hi": "आर्थिक कार्य विभाग" },
+    "emblem": "ashoka"
+  },
+  "headingStack": [
+    { "text": { "en": "OFFICE MEMORANDUM", "hi": "कार्यालय ज्ञापन" }, "level": "title" }
+  ],
+  "metadata": {
+    "fileNumber": "No. F. 7(14)-E.II/48",
+    "diaryNumber": "D-1142/48",
+    "date": { "value": "1948-03-19", "format": "long-en" },
+    "place": { "en": "New Delhi" },
+    "references": [
+      "in continuation of this Department's O.M. of even number dated the 5th February 1948"
+    ],
+    "pageMarks": { "show": false }
+  },
+  "subject": {
+    "en": "Grant of dearness allowance to Central Government servants — clarification regarding officiating pay"
+  },
+  "body": [
+    {
+      "type": "paragraph",
+      "number": "1.",
+      "text": { "en": "The undersigned is directed to refer to the Office Memorandum cited above and to state that several Ministries have sought clarification on the basis of which dearness allowance is to be computed in respect of Government servants holding officiating appointments." }
+    },
+    {
+      "type": "list",
+      "ordered": true,
+      "items": [
+        { "en": "dearness allowance shall be regulated with reference to the pay actually drawn in the officiating post;" },
+        { "en": "no arrears shall accrue for any period prior to the date of assumption of officiating charge;" },
+        { "en": "the local Audit Officer shall be consulted in all cases of doubt." }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "number": "2.",
+      "text": { "en": "All Ministries and Departments are requested to bring the above to the notice of their attached and subordinate offices for guidance and necessary action." }
+    }
+  ],
+  "writer": {
+    "name": "S. Lall",
+    "designation": { "en": "Under Secretary to the Government of India" }
+  },
+  "recipient": {
+    "name": "All Ministries and Departments of the Government of India",
+    "address": [ "(as per standard distribution)" ]
+  },
+  "signature": {
+    "name": "S. Lall",
+    "designation": { "en": "Under Secretary to the Government of India" },
+    "style": "ink"
+  },
+  "stamps": [
+    {
+      "family": "rectangular-dater",
+      "text": { "en": "DIARISED" },
+      "subtext": { "en": "20 MAR 1948" },
+      "position": "top-right",
+      "tiltRange": [-3, 4],
+      "pressureDropout": 0.4,
+      "ink": "violet"
+    }
+  ],
+  "paperProfile": { "tone": "off-white", "foxing": 0.12, "edgeDarkening": 0.3 },
+  "fold": { "axis": "none" },
+  "punchHoles": { "show": true, "count": 2, "position": "top-left" },
+  "tagWear": 0.4
+}

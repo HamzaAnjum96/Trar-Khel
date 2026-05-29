@@ -1,0 +1,84 @@
+{
+  "docType": "postal-notification",
+  "seed": 1947,
+  "title": "postal-notification",
+  "language": { "primary": "en", "bilingual": true },
+  "masthead": {
+    "authority": { "en": "GOVERNMENT OF INDIA", "hi": "भारत सरकार" },
+    "department": { "en": "Posts and Telegraphs Department", "hi": "डाक तार विभाग" },
+    "office": { "en": "Office of the Director General", "hi": "महानिदेशक कार्यालय" },
+    "emblem": "ashoka"
+  },
+  "headingStack": [
+    { "text": { "en": "NOTIFICATION", "hi": "अधिसूचना" }, "level": "title" },
+    { "text": { "en": "Revision of Inland Post Card Rates" }, "level": "subtitle" }
+  ],
+  "metadata": {
+    "fileNumber": "No. 12(7)/47-P&T",
+    "diaryNumber": "D-2389/47",
+    "date": { "value": "1947-09-01", "format": "long-en" },
+    "place": { "en": "New Delhi", "hi": "नई दिल्ली" },
+    "references": [
+      "with reference to the Director General's Circular No. 5/3/47 dated the 2nd August 1947"
+    ],
+    "pageMarks": { "show": true }
+  },
+  "subject": {
+    "en": "Revised tariff for inland post cards and acknowledgement cards with effect from 1st October 1947"
+  },
+  "body": [
+    {
+      "type": "paragraph",
+      "number": "1.",
+      "text": { "en": "In exercise of the powers conferred by the Indian Post Office Act, the Governor General in Council is pleased to direct that the rates set out in the Schedule below shall come into force on and from the 1st October 1947." }
+    },
+    {
+      "type": "paragraph",
+      "number": "2.",
+      "text": { "en": "All Heads of Circles shall arrange for the immediate display of this Notification at every post office and shall ensure that existing stocks are over-stamped with the revised denominations until fresh supplies are received from the Central Stamp Store." }
+    },
+    {
+      "type": "table",
+      "columns": [ { "en": "Article" }, { "en": "Former Rate" }, { "en": "Revised Rate" } ],
+      "rows": [
+        [ { "en": "Single inland post card" }, { "en": "9 pies" }, { "en": "6 pies" } ],
+        [ { "en": "Reply post card" }, { "en": "1 anna 6 pies" }, { "en": "1 anna" } ],
+        [ { "en": "Acknowledgement card" }, { "en": "9 pies" }, { "en": "6 pies" } ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "number": "3.",
+      "text": { "en": "Any post card posted on or after the appointed day bearing the former rate shall be charged with deficient postage in the usual manner." }
+    }
+  ],
+  "signature": {
+    "name": "R. K. Menon",
+    "designation": { "en": "for Director General, Posts and Telegraphs" },
+    "style": "ink"
+  },
+  "stamps": [
+    {
+      "family": "circular-seal",
+      "text": { "en": "DIRECTOR GENERAL P & T" },
+      "subtext": { "en": "NEW DELHI" },
+      "position": "bottom-right",
+      "tiltRange": [-4, 3],
+      "pressureDropout": 0.35,
+      "ink": "violet"
+    },
+    {
+      "family": "received",
+      "text": { "en": "RECEIVED" },
+      "subtext": { "en": "04 SEP 1947" },
+      "position": "top-right",
+      "tiltRange": [-6, 6],
+      "pressureDropout": 0.45,
+      "ink": "violet"
+    }
+  ],
+  "paperProfile": { "tone": "buff", "foxing": 0.2, "edgeDarkening": 0.4 },
+  "fold": { "axis": "horizontal", "position": 0.5, "intensity": 0.3 },
+  "punchHoles": { "show": true, "count": 2, "position": "top-left" },
+  "tagWear": 0.35
+}

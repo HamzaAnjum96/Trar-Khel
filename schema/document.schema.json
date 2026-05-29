@@ -1,0 +1,244 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trar-khel/schema/document.schema.json",
+  "title": "Trar-Khel document spec",
+  "description": "The token contract an AI emits. A deterministic renderer turns this into HTML + PDF + PNG. Improvise wording inside fields; never invent fields the schema does not define.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["docType", "seed", "masthead", "headingStack", "metadata"],
+  "properties": {
+    "docType": {
+      "description": "Which template to render.",
+      "enum": ["postal-notification", "office-memo", "postcard"]
+    },
+    "seed": {
+      "description": "Integer seed for all pseudo-random placement/jitter. Same spec + same seed => identical asset.",
+      "type": "integer",
+      "minimum": 0
+    },
+    "title": {
+      "description": "Internal label used for the output filename. Not rendered on the page.",
+      "type": "string"
+    },
+    "language": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "primary": { "enum": ["en", "hi"], "default": "en" },
+        "bilingual": { "type": "boolean", "default": true }
+      }
+    },
+    "masthead": {
+      "description": "The centred authority block at the top of the page.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authority"],
+      "properties": {
+        "authority": { "$ref": "#/$defs/text", "description": "e.g. Government of India" },
+        "department": { "$ref": "#/$defs/text" },
+        "office": { "$ref": "#/$defs/text" },
+        "emblem": { "enum": ["ashoka", "crown", "star", "none"], "default": "none" }
+      }
+    },
+    "headingStack": {
+      "description": "Stacked headings under the masthead, in order. Keep it schematic, not expressive.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["text", "level"],
+        "properties": {
+          "text": { "$ref": "#/$defs/text" },
+          "level": { "enum": ["kicker", "title", "subtitle"] }
+        }
+      }
+    },
+    "metadata": {
+      "description": "Clerical traceability codes. Density here is what reads as 'official'.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["date"],
+      "properties": {
+        "fileNumber": { "type": "string", "description": "e.g. No. 12(7)/47-Estt." },
+        "diaryNumber": { "type": "string", "description": "e.g. D-2389/47" },
+        "date": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["value"],
+          "properties": {
+            "value": { "type": "string", "description": "ISO date or free text as printed" },
+            "format": { "enum": ["long-en", "short-en", "as-written"], "default": "long-en" }
+          }
+        },
+        "place": { "$ref": "#/$defs/text" },
+        "references": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Lines like 'with reference to your No. 5/3/47 dated 2nd August 1947'"
+        },
+        "pageMarks": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": { "show": { "type": "boolean", "default": false } }
+        }
+      }
+    },
+    "writer": { "$ref": "#/$defs/party" },
+    "recipient": { "$ref": "#/$defs/party" },
+    "subject": { "$ref": "#/$defs/text", "description": "The 'Subject:' line." },
+    "salutation": { "$ref": "#/$defs/text" },
+    "body": {
+      "description": "Ordered content blocks. Real HTML text only.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/block" }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "$ref": "#/$defs/text" },
+        "designation": { "$ref": "#/$defs/text" },
+        "style": { "enum": ["ink", "typed"], "default": "ink" }
+      }
+    },
+    "stamps": {
+      "description": "0-3 marks. More than 2-3 reads as a collage. Each lands in ONE quadrant.",
+      "type": "array",
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["family"],
+        "properties": {
+          "family": { "enum": ["circular-seal", "rectangular-dater", "revenue", "received", "cancellation"] },
+          "text": { "$ref": "#/$defs/text" },
+          "subtext": { "$ref": "#/$defs/text" },
+          "position": { "$ref": "#/$defs/quadrant", "default": "top-right" },
+          "tiltRange": { "$ref": "#/$defs/range", "description": "Degrees, e.g. [-4, 4]" },
+          "pressureDropout": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.3 },
+          "scale": { "type": "number", "minimum": 0.3, "maximum": 3, "default": 1 },
+          "ink": { "enum": ["violet", "black", "red", "blue"], "default": "violet" }
+        }
+      }
+    },
+    "paperProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tone": { "enum": ["off-white", "buff", "grey", "manila"], "default": "buff" },
+        "foxing": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.2, "description": "Sparse oxidised spots; keep low and clustered." },
+        "edgeDarkening": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.35 }
+      }
+    },
+    "fold": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "axis": { "enum": ["horizontal", "vertical", "none"], "default": "none" },
+        "position": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.5, "description": "Fraction along the page." },
+        "intensity": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.3 }
+      }
+    },
+    "punchHoles": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "show": { "type": "boolean", "default": false },
+        "count": { "type": "integer", "minimum": 1, "maximum": 4, "default": 2 },
+        "position": { "enum": ["top-left", "left-margin", "top"], "default": "top-left" }
+      }
+    },
+    "tagWear": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.3, "description": "Corner/edge wear concentrated at the filing/tag point." },
+    "postal": {
+      "description": "Postcard-only. Right half is recipient + markings; stamp upper-right.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "zoning": { "enum": ["right-half"], "default": "right-half" },
+        "stampPosition": { "enum": ["upper-right"], "default": "upper-right" },
+        "legend": { "$ref": "#/$defs/text" },
+        "addressLines": { "type": "array", "items": { "type": "string" } },
+        "message": { "$ref": "#/$defs/text" }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "docType": { "const": "postcard" } } },
+      "then": { "required": ["postal"] }
+    }
+  ],
+  "$defs": {
+    "text": {
+      "description": "Localised text: a plain string (primary language) or an {en, hi} object.",
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "en": { "type": "string" },
+            "hi": { "type": "string" }
+          }
+        }
+      ]
+    },
+    "range": {
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "quadrant": {
+      "enum": ["top-left", "top-right", "bottom-left", "bottom-right", "center"]
+    },
+    "party": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "$ref": "#/$defs/text" },
+        "designation": { "$ref": "#/$defs/text" },
+        "address": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "block": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "text"],
+          "properties": {
+            "type": { "const": "paragraph" },
+            "number": { "type": "string", "description": "Optional clause number, e.g. '2.'" },
+            "text": { "$ref": "#/$defs/text" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "items"],
+          "properties": {
+            "type": { "const": "list" },
+            "ordered": { "type": "boolean", "default": false },
+            "items": { "type": "array", "items": { "$ref": "#/$defs/text" } }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "rows"],
+          "properties": {
+            "type": { "const": "table" },
+            "columns": { "type": "array", "items": { "$ref": "#/$defs/text" } },
+            "rows": {
+              "type": "array",
+              "items": { "type": "array", "items": { "$ref": "#/$defs/text" } }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

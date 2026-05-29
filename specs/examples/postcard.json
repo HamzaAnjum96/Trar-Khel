@@ -1,0 +1,46 @@
+{
+  "docType": "postcard",
+  "seed": 1879,
+  "title": "postcard",
+  "language": { "primary": "en", "bilingual": true },
+  "masthead": {
+    "authority": { "en": "INDIA POST CARD", "hi": "भारत डाक पत्र" },
+    "emblem": "ashoka"
+  },
+  "headingStack": [
+    { "text": { "en": "POST CARD", "hi": "डाक पत्र" }, "level": "kicker" }
+  ],
+  "metadata": {
+    "date": { "value": "1950-01-26", "format": "as-written" },
+    "place": { "en": "Allahabad" }
+  },
+  "postal": {
+    "zoning": "right-half",
+    "stampPosition": "upper-right",
+    "legend": { "en": "POST CARD", "hi": "डाक पत्र" },
+    "addressLines": [
+      "Shri R. N. Tandon, B.A.",
+      "Pleader, Civil Courts",
+      "Katra Road",
+      "ALLAHABAD"
+    ],
+    "message": {
+      "en": "Dear Tandon, the papers in the Khanna matter are ready for collection at the office. Kindly call on Tuesday next. The hearing is fixed for the 4th. — Yours, M. Lal"
+    }
+  },
+  "stamps": [
+    {
+      "family": "cancellation",
+      "text": { "en": "ALLAHABAD G.P.O." },
+      "subtext": { "en": "26 JAN 1950" },
+      "position": "top-right",
+      "tiltRange": [-8, 8],
+      "pressureDropout": 0.5,
+      "ink": "black"
+    }
+  ],
+  "paperProfile": { "tone": "manila", "foxing": 0.25, "edgeDarkening": 0.45 },
+  "fold": { "axis": "none" },
+  "punchHoles": { "show": false },
+  "tagWear": 0.2
+}

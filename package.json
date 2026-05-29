@@ -12,8 +12,7 @@
     "render": "node scripts/render.js",
     "generate": "node scripts/generate.js",
     "trace": "node scripts/trace.js",
-    "optimize": "node scripts/optimize.js",
-    "postinstall": "node -e \"console.log('\\nTrar-Khel: run `npx playwright install chromium` once before `npm run generate`.\\n')\""
+    "optimize": "node scripts/optimize.js"
   },
   "dependencies": {
     "ajv": "^8.17.1",
