@@ -82,8 +82,17 @@ npm run generate -- specs/examples/postal-notification.json
 
 ---
 
-## Status
+## How it fits together
 
-This repo is being built in sprints. While that is in progress a `sprints/` directory holds
-the roadmap and per-sprint plans; it is **removed in the final sprint**, after which this
-README is the canonical map.
+```
+docs/02 + schema/        ← what you may emit (the token contract)
+docs/06 + AGENTS.md      ← how to author a spec for a request
+scripts/ (validate →     ← the deterministic pipeline that makes pixels
+  render → generate)
+docs/01,03,04,05         ← why the output looks the way it does
+docs/07                  ← how to check the result
+examples/                ← what "good" looks like
+```
+
+Start at [`AGENTS.md`](AGENTS.md), reach for [`docs/`](docs/) when you need the *why*, and copy
+from [`specs/examples/`](specs/examples/) when you need a head start.

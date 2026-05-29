@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>office-memo</title>
+<style>
+/* fonts.css — font stacks for the aesthetic.
+ *
+ * If matching webfonts are vendored into assets/fonts/ and declared via @font-face
+ * here, they are used; otherwise the stacks fall back to widely available system
+ * fonts that preserve the right division of labour (formal serif / plain grotesque /
+ * monospace / Devanagari). See docs/05-typography-layout.md.
+ *
+ * To vendor a font: drop the .woff2 into assets/fonts/ and add an @font-face rule
+ * whose family name matches the variables below. Vendoring makes PDF rendering
+ * deterministic and offline-capable.
+ */
+
+:root {
+  /* Titles & document body — a restrained, institutional serif. */
+  --font-serif: "Libre Baskerville", "Baskervville", "Liberation Serif", "Times New Roman", Georgia, serif;
+  /* Metadata & interface chrome — a plain grotesque. */
+  --font-sans: "IBM Plex Sans", "Liberation Sans", "Helvetica Neue", Arial, sans-serif;
+  /* Typed inserts only, used sparingly. */
+  --font-mono: "Courier Prime", "Liberation Mono", "Courier New", monospace;
+  /* Bilingual Hindi/English labelling. */
+  --font-deva: "Noto Serif Devanagari", "Noto Sans Devanagari", var(--font-serif);
+}
+
+/* Devanagari text gets the Devanagari stack automatically. */
+[lang="hi"] {
+  font-family: var(--font-deva);
+}
+
+
+/* paper.css — LAYER 1 (paper) and LAYER 4 (wear) surface treatment.
+ *
+ * The renderer sets CSS custom properties from the spec's paperProfile / fold /
+ * punchHoles / tagWear tokens. Ageing is LOCAL by design: darkening favours edges
+ * and folds; foxing is sparse; punch holes sit at the filing corner. No uniform sepia.
+ */
+
+:root {
+  --paper-base: #efe7d4;       /* overridden per paperProfile.tone */
+  --paper-ink: #2b2722;
+  --paper-rule: #6b6253;
+  --edge-darkening: 0.35;      /* 0..1 */
+  --foxing: 0.2;               /* 0..1 */
+}
+
+/* Paper tone presets (chosen by renderer via a body class). */
+.tone-off-white { --paper-base: #f4efe2; }
+.tone-buff      { --paper-base: #ece1c8; }
+.tone-grey      { --paper-base: #e3e0d6; }
+.tone-manila    { --paper-base: #e7d6ac; }
+
+.sheet {
+  position: relative;
+  background-color: var(--paper-base);
+  color: var(--paper-ink);
+  overflow: hidden;
+  isolation: isolate; /* contain blend modes to the sheet */
+}
+
+/* LAYER 1: subtle tonal variation + edge darkening, painted with gradients so it
+ * stays vector-crisp at any zoom and in PDF. Stronger at the margins than centre. */
+.layer-paper {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      120% 130% at 50% 45%,
+      rgba(0,0,0,0) 55%,
+      rgba(60,42,18, calc(var(--edge-darkening) * 0.55)) 100%
+    );
+  mix-blend-mode: multiply;
+}
+
+/* Sparse, clustered foxing. Opacity scales with --foxing; positions are seeded
+ * inline by the renderer via background-position custom props if present. */
+.layer-paper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: var(--foxing);
+  background-image:
+    radial-gradient(circle at 18% 22%, rgba(120,80,30,0.5) 0 2px, transparent 3px),
+    radial-gradient(circle at 23% 28%, rgba(120,80,30,0.4) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 81% 73%, rgba(120,80,30,0.45) 0 2px, transparent 3px),
+    radial-gradient(circle at 86% 78%, rgba(120,80,30,0.35) 0 1.5px, transparent 2.5px);
+  mix-blend-mode: multiply;
+}
+
+/* Content and marks sit above the paper layer. */
+.layer-content { position: relative; z-index: 2; }
+.layer-mark    { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.layer-wear    { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+
+/* document.css — LAYER 2 (content): typography, hierarchy, layout, rules.
+ *
+ * Goal: schematic, centred officialdom with disciplined white space and ruled
+ * separators. Plain, not "designed". See docs/05-typography-layout.md.
+ */
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-serif);
+  line-height: 1.5;
+  color: var(--paper-ink);
+}
+
+/* A4-ish page. PDF/PNG export uses these dimensions. */
+.sheet {
+  width: 794px;            /* ~A4 @ 96dpi */
+  min-height: 1123px;
+  margin: 0 auto;
+  padding: 64px 72px 80px; /* narrow-ish margins */
+}
+
+.lang-alt {
+  display: block;
+  font-family: var(--font-deva);
+  font-size: 0.82em;
+  font-weight: normal;
+  opacity: 0.85;
+}
+.lang-alt-inline {
+  font-family: var(--font-deva);
+  font-size: 0.85em;
+  opacity: 0.85;
+}
+
+/* --- Masthead (centred authority block) --- */
+.masthead { text-align: center; }
+.masthead .emblem {
+  width: 46px; height: 46px;
+  margin: 0 auto 6px;
+  display: block;
+}
+.masthead .authority {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-size: 20px;
+  margin: 0;
+}
+.masthead .department,
+.masthead .office {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  margin: 2px 0 0;
+  letter-spacing: 0.02em;
+}
+
+/* --- Heading stack --- */
+.heading-stack { text-align: center; margin: 18px 0 8px; }
+.heading-stack .kicker {
+  font-family: var(--font-sans);
+  letter-spacing: 0.22em;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+.heading-stack .title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  margin: 2px 0;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  text-decoration-thickness: 1px;
+}
+.heading-stack .subtitle {
+  font-size: 14px;
+  font-style: italic;
+}
+
+/* Ruled separators do organisational work. */
+.rule {
+  border: none;
+  border-top: 1.5px solid var(--paper-rule);
+  margin: 10px 0;
+}
+.rule-double {
+  border: none;
+  border-top: 1.5px solid var(--paper-rule);
+  border-bottom: 0.75px solid var(--paper-rule);
+  height: 3px;
+  margin: 10px 0;
+}
+
+/* --- Metadata rows (the traceability codes) --- */
+.metadata {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin: 6px 0 12px;
+}
+.metadata .meta-left,
+.metadata .meta-right { white-space: pre-line; }
+.metadata .meta-right { text-align: right; }
+.metadata .file-number { font-weight: 600; }
+.references {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-style: italic;
+  margin: 4px 0 12px;
+}
+
+/* --- Subject / salutation --- */
+.subject {
+  font-size: 14px;
+  margin: 14px 0;
+}
+.subject .label { font-weight: 700; }
+.salutation { margin: 12px 0; }
+
+/* --- Body blocks --- */
+.body { font-size: 14.5px; text-align: justify; }
+.body .para { margin: 0 0 12px; position: relative; }
+.body .para .clause-no {
+  font-weight: 700;
+  margin-right: 8px;
+}
+.body ol, .body ul { margin: 0 0 12px 0; padding-left: 28px; }
+.body li { margin: 0 0 6px; }
+
+.body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 13.5px;
+}
+.body th, .body td {
+  border: 1px solid var(--paper-rule);
+  padding: 6px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+.body th {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  background: rgba(0,0,0,0.04);
+}
+
+/* --- Parties (writer / recipient) --- */
+.party { font-size: 13.5px; margin: 12px 0; }
+.party .name { font-weight: 600; }
+.party .address { white-space: pre-line; }
+
+/* --- Signature --- */
+.signature {
+  margin-top: 36px;
+  text-align: right;
+  font-size: 13.5px;
+}
+.signature .sign-name {
+  font-family: var(--font-serif);
+}
+.signature.style-ink .sign-name {
+  font-style: italic;
+  font-size: 18px;
+}
+.signature .sign-designation {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+}
+
+/* --- Page marks --- */
+.page-mark {
+  position: absolute;
+  bottom: 36px;
+  left: 0; right: 0;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+/* --- Postcard layout --- */
+.postcard .sheet,
+.sheet.postcard {
+  width: 1004px;           /* landscape ~148x105mm @ ~170dpi-ish ratio */
+  min-height: 650px;
+  padding: 40px 48px;
+}
+.postcard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  height: 100%;
+  min-height: 560px;
+}
+.postcard-message {
+  padding-right: 28px;
+  border-right: 1px solid var(--paper-rule);
+  font-size: 15px;
+}
+.postcard-address {
+  padding-left: 28px;
+  position: relative;
+}
+.postcard-legend {
+  text-align: center;
+  font-family: var(--font-sans);
+  letter-spacing: 0.18em;
+  font-size: 13px;
+  border-bottom: 1px solid var(--paper-rule);
+  padding-bottom: 6px;
+  margin-bottom: 18px;
+}
+.postcard-address .address-lines {
+  white-space: pre-line;
+  font-size: 15px;
+  margin-top: 90px;
+  line-height: 1.9;
+}
+.postcard-stamp-box {
+  position: absolute;
+  top: 8px; right: 8px;
+  width: 92px; height: 108px;
+  border: 1px dashed rgba(0,0,0,0.35);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-sans);
+  font-size: 9px;
+  text-align: center;
+  color: rgba(0,0,0,0.4);
+}
+
+/* Print sizing: one sheet per page, no UA margins. */
+@page { size: A4; margin: 0; }
+@media print {
+  body { background: none; }
+  .sheet { margin: 0; box-shadow: none; }
+}
+
+</style>
+</head>
+<body class="">
+  <!-- The four-layer model: paper / content / mark / wear. Text stays real text. -->
+  <article class="sheet tone-off-white" style="--edge-darkening:0.3;--foxing:0.12;">
+    <div class="layer-paper" aria-hidden="true"></div>
+
+    <div class="layer-content">
+
+    <header class="masthead">
+      <div class="emblem" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="emblem">
+  <g fill="none" stroke="currentColor" stroke-width="3">
+    <circle cx="50" cy="50" r="30"/>
+    <circle cx="50" cy="50" r="6" fill="currentColor"/>
+  </g>
+  <g stroke="currentColor" stroke-width="2">
+    <line x1="58.0" y1="50.0" x2="78.0" y2="50.0"/><line x1="57.7" y1="52.1" x2="77.0" y2="57.2"/><line x1="56.9" y1="54.0" x2="74.2" y2="64.0"/><line x1="55.7" y1="55.7" x2="69.8" y2="69.8"/><line x1="54.0" y1="56.9" x2="64.0" y2="74.2"/><line x1="52.1" y1="57.7" x2="57.2" y2="77.0"/><line x1="50.0" y1="58.0" x2="50.0" y2="78.0"/><line x1="47.9" y1="57.7" x2="42.8" y2="77.0"/><line x1="46.0" y1="56.9" x2="36.0" y2="74.2"/><line x1="44.3" y1="55.7" x2="30.2" y2="69.8"/><line x1="43.1" y1="54.0" x2="25.8" y2="64.0"/><line x1="42.3" y1="52.1" x2="23.0" y2="57.2"/><line x1="42.0" y1="50.0" x2="22.0" y2="50.0"/><line x1="42.3" y1="47.9" x2="23.0" y2="42.8"/><line x1="43.1" y1="46.0" x2="25.8" y2="36.0"/><line x1="44.3" y1="44.3" x2="30.2" y2="30.2"/><line x1="46.0" y1="43.1" x2="36.0" y2="25.8"/><line x1="47.9" y1="42.3" x2="42.8" y2="23.0"/><line x1="50.0" y1="42.0" x2="50.0" y2="22.0"/><line x1="52.1" y1="42.3" x2="57.2" y2="23.0"/><line x1="54.0" y1="43.1" x2="64.0" y2="25.8"/><line x1="55.7" y1="44.3" x2="69.8" y2="30.2"/><line x1="56.9" y1="46.0" x2="74.2" y2="36.0"/><line x1="57.7" y1="47.9" x2="77.0" y2="42.8"/>
+  </g>
+</svg></div>
+      <p class="authority">GOVERNMENT OF INDIA <span class="lang-alt-inline" lang="hi">भारत सरकार</span></p>
+      <p class="department">Ministry of Finance <span class="lang-alt-inline" lang="hi">वित्त मंत्रालय</span></p>
+      <p class="office">Department of Economic Affairs <span class="lang-alt-inline" lang="hi">आर्थिक कार्य विभाग</span></p>
+    </header>
+<hr class="rule-double">
+
+    <div class="metadata">
+      <div class="meta-left"><span class="file-number">No. F. 7(14)-E.II/48</span>
+      D-1142/48</div>
+      <div class="meta-right">New Delhi
+      Dated the 19th March 1948</div>
+    </div>
+    <div class="references">
+      <div>in continuation of this Department&#39;s O.M. of even number dated the 5th February 1948</div>
+    </div>
+<div class="heading-stack">
+      <div class="title">OFFICE MEMORANDUM <span class="lang-alt-inline" lang="hi">कार्यालय ज्ञापन</span></div>
+    </div>
+<hr class="rule">
+<p class="subject"><span class="label">Subject:</span> Grant of dearness allowance to Central Government servants — clarification regarding officiating pay</p>
+<div class="body">
+      <p class="para"><span class="clause-no">1.</span>The undersigned is directed to refer to the Office Memorandum cited above and to state that several Ministries have sought clarification on the basis of which dearness allowance is to be computed in respect of Government servants holding officiating appointments.</p>
+      <ol>
+        <li>dearness allowance shall be regulated with reference to the pay actually drawn in the officiating post;</li>
+        <li>no arrears shall accrue for any period prior to the date of assumption of officiating charge;</li>
+        <li>the local Audit Officer shall be consulted in all cases of doubt.</li>
+      </ol>
+      <p class="para"><span class="clause-no">2.</span>All Ministries and Departments are requested to bring the above to the notice of their attached and subordinate offices for guidance and necessary action.</p>
+    </div>
+<div class="party party-recipient"><div class="name">All Ministries and Departments of the Government of India</div><div class="address">(as per standard distribution)</div></div>
+
+    <div class="signature style-ink">
+      <div class="sign-name">S. Lall</div>
+      <div class="sign-designation">Under Secretary to the Government of India</div>
+    </div>
+    </div>
+
+    <div class="layer-mark" aria-hidden="true">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- Ink filter: dilate (edge squeeze) -> displace (broken edges) -> blur (paper bleed). -->
+    <filter id="stampInk" x="-30%" y="-30%" width="160%" height="160%"
+            color-interpolation-filters="sRGB">
+      <feMorphology in="SourceGraphic" operator="dilate" radius="0.4" result="edgeSpread"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.9 0.45" numOctaves="2"
+                    seed="17" result="warpNoise"/>
+      <feDisplacementMap in="edgeSpread" in2="warpNoise" scale="1.4"
+                         xChannelSelector="R" yChannelSelector="G" result="warped"/>
+      <feGaussianBlur in="warped" stdDeviation="0.35" result="softInk"/>
+      <feComposite in="softInk" in2="softInk" operator="over"/>
+    </filter>
+
+    <!-- Pressure dropout texture: low-frequency noise, used as a luminance mask.
+         White prints, dark drops out. Multiplied by a radial 'good centre' field. -->
+    <filter id="pressureNoise" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04 0.06" numOctaves="3"
+                    seed="7" result="n"/>
+      <feColorMatrix in="n" type="matrix"
+        values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0.9 0.9 0.9 0 0"/>
+    </filter>
+
+    <!-- Speckle/contamination: sparse dark flecks. -->
+    <filter id="speckle" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="turbulence" baseFrequency="0.5" numOctaves="2" seed="31" result="s"/>
+      <feColorMatrix in="s" type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 18 -9"/>
+    </filter>
+  </defs></svg>
+
+    <svg class="stamp stamp-rectangular-dater" viewBox="0 0 240 160"
+         style="position:absolute; left:81.12%; top:17.38%;
+                width:150px; height:auto;
+                transform:translate(-50%,-50%) rotate(2.87deg);
+                color:#46306b; mix-blend-mode:multiply; opacity:0.82;"
+         xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+    <radialGradient id="press-0-g" cx="50%" cy="45%" r="65%">
+      <stop offset="0%" stop-color="white" stop-opacity="0.76"/>
+      <stop offset="55%" stop-color="white" stop-opacity="0.60"/>
+      <stop offset="100%" stop-color="white" stop-opacity="0.24"/>
+    </radialGradient></defs>
+      <mask id="press-0-mask">
+        <rect x="0" y="0" width="240" height="160" fill="url(#press-0-g)"/>
+      </mask>
+      <g filter="url(#stampInk)" mask="url(#press-0-mask)">
+        
+  <g>
+    <rect x="6" y="20" width="200" height="74" fill="none" stroke="currentColor" stroke-width="3"/>
+    <line x1="6" y1="58" x2="206" y2="58" stroke="currentColor" stroke-width="1.5"/>
+    <text x="106" y="46" font-family="sans-serif" font-size="16" font-weight="700"
+          letter-spacing="2" text-anchor="middle" fill="currentColor">DIARISED</text>
+    <text x="106" y="82" font-family="monospace" font-size="15"
+          text-anchor="middle" fill="currentColor">20 MAR 1948</text>
+  </g>
+      </g>
+    </svg>
+    </div>
+
+    <div class="layer-wear" aria-hidden="true">
+<div class="tag-wear" style="position:absolute; left:0; top:0; width:120px; height:120px;
+        background:radial-gradient(circle at 18% 18%,
+          rgba(40,28,10,0.18) 0%, transparent 70%);
+        mix-blend-mode:multiply;"></div>
+<div class="punch-holes"><span style="position:absolute; left:27px; top:59px;
+          width:11px; height:11px; border-radius:50%;
+          background:rgba(255,255,255,0.85);
+          box-shadow: inset 0 0 0 1px rgba(40,28,10,0.5),
+                      1px 1px 2px rgba(40,28,10,0.4);"></span><span style="position:absolute; left:28px; top:128px;
+          width:11px; height:11px; border-radius:50%;
+          background:rgba(255,255,255,0.85);
+          box-shadow: inset 0 0 0 1px rgba(40,28,10,0.5),
+                      1px 1px 2px rgba(40,28,10,0.4);"></span></div>
+    </div>
+  </article>
+</body>
+</html>
