@@ -1,0 +1,27 @@
+/* fonts.css — font stacks for the aesthetic.
+ *
+ * If matching webfonts are vendored into assets/fonts/ and declared via @font-face
+ * here, they are used; otherwise the stacks fall back to widely available system
+ * fonts that preserve the right division of labour (formal serif / plain grotesque /
+ * monospace / Devanagari). See docs/05-typography-layout.md.
+ *
+ * To vendor a font: drop the .woff2 into assets/fonts/ and add an @font-face rule
+ * whose family name matches the variables below. Vendoring makes PDF rendering
+ * deterministic and offline-capable.
+ */
+
+:root {
+  /* Titles & document body — a restrained, institutional serif. */
+  --font-serif: "Libre Baskerville", "Baskervville", "Liberation Serif", "Times New Roman", Georgia, serif;
+  /* Metadata & interface chrome — a plain grotesque. */
+  --font-sans: "IBM Plex Sans", "Liberation Sans", "Helvetica Neue", Arial, sans-serif;
+  /* Typed inserts only, used sparingly. */
+  --font-mono: "Courier Prime", "Liberation Mono", "Courier New", monospace;
+  /* Bilingual Hindi/English labelling. */
+  --font-deva: "Noto Serif Devanagari", "Noto Sans Devanagari", var(--font-serif);
+}
+
+/* Devanagari text gets the Devanagari stack automatically. */
+[lang="hi"] {
+  font-family: var(--font-deva);
+}

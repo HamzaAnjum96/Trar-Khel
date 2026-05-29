@@ -1,0 +1,68 @@
+/* paper.css — LAYER 1 (paper) and LAYER 4 (wear) surface treatment.
+ *
+ * The renderer sets CSS custom properties from the spec's paperProfile / fold /
+ * punchHoles / tagWear tokens. Ageing is LOCAL by design: darkening favours edges
+ * and folds; foxing is sparse; punch holes sit at the filing corner. No uniform sepia.
+ */
+
+:root {
+  --paper-base: #efe7d4;       /* overridden per paperProfile.tone */
+  --paper-ink: #2b2722;
+  --paper-rule: #6b6253;
+  --edge-darkening: 0.35;      /* 0..1 */
+  --foxing: 0.2;               /* 0..1 */
+}
+
+/* Paper tone presets (chosen by renderer via a body class). */
+.tone-off-white { --paper-base: #f4efe2; }
+.tone-buff      { --paper-base: #ece1c8; }
+.tone-grey      { --paper-base: #e3e0d6; }
+.tone-manila    { --paper-base: #e7d6ac; }
+
+.sheet {
+  position: relative;
+  background-color: var(--paper-base);
+  color: var(--paper-ink);
+  overflow: hidden;
+  isolation: isolate; /* contain blend modes to the sheet */
+}
+
+/* LAYER 1: subtle tonal variation + edge darkening, painted with gradients so it
+ * stays vector-crisp at any zoom and in PDF. Stronger at the margins than centre. */
+.layer-paper {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      120% 130% at 50% 45%,
+      rgba(0,0,0,0) 55%,
+      rgba(60,42,18, calc(var(--edge-darkening) * 0.55)) 100%
+    );
+  mix-blend-mode: multiply;
+}
+
+/* Sparse, clustered foxing. Opacity scales with --foxing; positions are seeded
+ * inline by the renderer via background-position custom props if present. */
+.layer-paper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: var(--foxing);
+  background-image:
+    radial-gradient(circle at 18% 22%, rgba(120,80,30,0.5) 0 2px, transparent 3px),
+    radial-gradient(circle at 23% 28%, rgba(120,80,30,0.4) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 81% 73%, rgba(120,80,30,0.45) 0 2px, transparent 3px),
+    radial-gradient(circle at 86% 78%, rgba(120,80,30,0.35) 0 1.5px, transparent 2.5px);
+  mix-blend-mode: multiply;
+}
+
+/* Content and marks sit above the paper layer. */
+.layer-content { position: relative; z-index: 2; }
+.layer-mark    { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.layer-wear    { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
