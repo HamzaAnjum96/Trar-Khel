@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+
+# Generated assets (the repo ships examples/ instead; output/ is scratch)
+output/*
+!output/.gitkeep
+
+# OS / editor noise
+.DS_Store
+*.log
+npm-debug.log*
+.idea/
+.vscode/

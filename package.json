@@ -1,0 +1,25 @@
+{
+  "name": "trar-khel",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "An AI-pointable generator for Indian bureaucratic postal-ephemera assets (HTML + PDF + PNG) from a structured document spec.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "validate": "node scripts/validate-spec.js",
+    "render": "node scripts/render.js",
+    "generate": "node scripts/generate.js",
+    "trace": "node scripts/trace.js",
+    "optimize": "node scripts/optimize.js",
+    "postinstall": "node -e \"console.log('\\nTrar-Khel: run `npx playwright install chromium` once before `npm run generate`.\\n')\""
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "playwright": "^1.49.0",
+    "potrace": "^2.1.8",
+    "svgo": "^3.3.2"
+  }
+}
