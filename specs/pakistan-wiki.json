@@ -1,0 +1,85 @@
+{
+  "docType": "postal-notification",
+  "seed": 1947,
+  "title": "pakistan-wiki",
+  "language": { "primary": "en", "bilingual": true },
+  "masthead": {
+    "authority": { "en": "GOVERNMENT OF PAKISTAN", "hi": "حکومتِ پاکستان" },
+    "department": { "en": "Department of Publications" },
+    "office": { "en": "Office of the Press Information Officer" },
+    "emblem": "star"
+  },
+  "headingStack": [
+    { "text": { "en": "NOTIFICATION", "hi": "اعلان" }, "level": "title" },
+    { "text": { "en": "Memorandum on the Constitution of the Dominion" }, "level": "subtitle" }
+  ],
+  "metadata": {
+    "fileNumber": "No. 14(8)/47-Pub.",
+    "diaryNumber": "D-1947/47",
+    "date": { "value": "1947-08-14", "format": "long-en" },
+    "place": { "en": "Karachi" },
+    "references": [
+      "issued under the authority of the Indian Independence Act 1947 with effect from the appointed day"
+    ],
+    "pageMarks": { "show": true }
+  },
+  "subject": {
+    "en": "Constitution of the Islamic Republic of Pakistan and the circumstances of its foundation — for general information"
+  },
+  "body": [
+    {
+      "type": "paragraph",
+      "number": "1.",
+      "text": { "en": "Pakistan, officially the Islamic Republic of Pakistan, is a country in South Asia. Islamabad is the nation's capital, while Karachi is its largest city and financial centre. It shares land borders with India to the east; Afghanistan to the west; Iran to the south-west; and China to the north-east, and is bounded by the Arabian Sea on the south." }
+    },
+    {
+      "type": "paragraph",
+      "number": "2.",
+      "text": { "en": "Pakistan achieved independence on the 14th August 1947 following the partition of British India into two separate Dominions. The nation was founded following the Pakistan Movement, which sought a homeland for the Muslims of British India after the All-India Muslim League's electoral victories in 1946." }
+    },
+    {
+      "type": "paragraph",
+      "number": "3.",
+      "text": { "en": "Muhammad Ali Jinnah, leader of the Muslim League, has assumed office as the first Governor-General and is recognised as the founding figure of the nation. All Heads of Offices shall arrange for the display of this Memorandum at every public office." }
+    },
+    {
+      "type": "table",
+      "columns": [ { "en": "Particulars" }, { "en": "Record" } ],
+      "rows": [
+        [ { "en": "Appointed day" }, { "en": "14th August 1947" } ],
+        [ { "en": "Capital" }, { "en": "Islamabad" } ],
+        [ { "en": "Largest city" }, { "en": "Karachi" } ],
+        [ { "en": "First Governor-General" }, { "en": "M. A. Jinnah" } ]
+      ]
+    }
+  ],
+  "signature": {
+    "name": "A. H. Anjum",
+    "designation": { "en": "for Press Information Officer, Government of Pakistan" },
+    "style": "ink"
+  },
+  "stamps": [
+    {
+      "family": "circular-seal",
+      "text": { "en": "GOVT OF PAKISTAN PUB" },
+      "subtext": { "en": "KARACHI" },
+      "position": "bottom-right",
+      "tiltRange": [-4, 3],
+      "pressureDropout": 0.35,
+      "ink": "blue"
+    },
+    {
+      "family": "received",
+      "text": { "en": "RECEIVED" },
+      "subtext": { "en": "16 AUG 1947" },
+      "position": "top-right",
+      "tiltRange": [-6, 6],
+      "pressureDropout": 0.45,
+      "ink": "violet"
+    }
+  ],
+  "paperProfile": { "tone": "buff", "foxing": 0.2, "edgeDarkening": 0.4 },
+  "fold": { "axis": "horizontal", "position": 0.5, "intensity": 0.3 },
+  "punchHoles": { "show": true, "count": 2, "position": "top-left" },
+  "tagWear": 0.35
+}
